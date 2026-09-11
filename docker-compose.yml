@@ -1,0 +1,7 @@
+services:
+  svm-demo:
+    build: .
+    volumes:
+      - ./outputs:/app/outputs
+    environment:
+      - MPLBACKEND=Agg
