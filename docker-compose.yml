@@ -1,6 +1,8 @@
 services:
   svm-demo:
     build: .
+    ports:
+      - "8000:8000"
     volumes:
       - ./outputs:/app/outputs
     environment:

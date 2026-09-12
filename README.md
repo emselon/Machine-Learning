@@ -12,7 +12,8 @@ svm-moons-demo/
 ├── docker-compose.yml
 ├── requirements.txt
 ├── src/
-│   └── train_compare_svm.py
+│   ├── train_compare_svm.py
+│   └── api.py
 ├── outputs/                  # ảnh kết quả được sinh ra ở đây
 └── README.md
 ```
@@ -32,7 +33,9 @@ docker compose up --build
 
 Lệnh này sẽ:
 1. Build image (cài Python 3.11 + các thư viện trong `requirements.txt`)
-2. Tự động chạy `src/train_compare_svm.py` bên trong container
+2. Khởi động API tại `http://localhost:8000`
+
+Mở `http://localhost:8000/docs` để xem và thử endpoint trực tiếp trên Swagger UI.
 
 Dừng bằng `Ctrl+C`, dọn dẹp container bằng:
 
@@ -59,6 +62,39 @@ docker compose up
     kernel trick, accuracy cao hơn.
   - Trên mỗi biểu đồ: đường liền là decision boundary, 2 đường đứt nét là
     margin, các điểm khoanh viền xanh lá là support vectors.
+
+## Gọi API dự đoán
+
+API dùng RBF SVM và nhận 2 đặc trưng của dataset `make_moons`:
+
+```powershell
+Invoke-RestMethod -Uri "http://localhost:8000/predict" -Method Post `
+  -ContentType "application/json" `
+  -Body '{"feature_1": 0.5, "feature_2": -0.2}'
+```
+
+API trả về `prediction`, `label`, `decision_score` và tên model.
+
+## Chia sẻ API qua ngrok
+
+Giữ Docker đang chạy, mở terminal khác và chạy:
+
+```bash
+ngrok http 8000
+```
+
+Ngrok sẽ cấp một URL HTTPS, ví dụ
+`https://7216-34-9-84-250.ngrok-free.app`. Máy khác gọi endpoint bằng cách
+thêm `/predict` vào URL:
+
+```powershell
+Invoke-RestMethod -Uri "https://7216-34-9-84-250.ngrok-free.app/predict" `
+  -Method Post -ContentType "application/json" `
+  -Body '{"feature_1": 0.5, "feature_2": -0.2}'
+```
+
+Link miễn phí thường thay đổi sau mỗi lần khởi động lại. Máy chạy Docker và
+ngrok phải luôn bật trong lúc máy khác gọi API.
 
 ## Dữ liệu dùng để huấn luyện
 

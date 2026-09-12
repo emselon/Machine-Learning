@@ -12,4 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 
-CMD ["python", "src/train_compare_svm.py"]
+EXPOSE 8000
+
+CMD ["sh", "-c", "python src/train_compare_svm.py && uvicorn src.api:app --host 0.0.0.0 --port 8000"]
